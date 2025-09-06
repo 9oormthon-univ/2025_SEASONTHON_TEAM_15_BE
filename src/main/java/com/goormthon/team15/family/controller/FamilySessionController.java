@@ -274,4 +274,78 @@ public class FamilySessionController {
         return ResponseEntity.ok(resolutions);
     }
     
+    @Operation(
+        summary = "가족 설정 및 세션 생성",
+        description = "가족 별명, 사용자 닉네임, 메모지 템플릿을 설정하고 가족 세션을 생성합니다.",
+        security = @SecurityRequirement(name = "Bearer Authentication")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "가족 설정 및 세션 생성 성공",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = FamilySessionResponse.class)
+            )),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+        @ApiResponse(responseCode = "401", description = "인증 실패")
+    })
+    @PostMapping("/setup-and-create")
+    public ResponseEntity<FamilySessionResponse> setupFamilyAndCreateSession(
+            @RequestBody FamilySetupRequest request,
+            Authentication authentication) {
+        
+        User user = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
+        
+        FamilySessionResponse response = familySessionService.setupFamilyAndCreateSession(request, user);
+        return ResponseEntity.ok(response);
+    }
+    
+    @Operation(
+        summary = "메모지 템플릿 목록 조회",
+        description = "사용 가능한 메모지 템플릿 목록을 조회합니다. 공개 API로 인증이 필요하지 않습니다."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "메모지 템플릿 목록 조회 성공",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = MemoTemplateResponse.class)
+            ))
+    })
+    @GetMapping("/memo-templates")
+    public ResponseEntity<List<MemoTemplateResponse>> getMemoTemplates() {
+        List<MemoTemplateResponse> templates = familySessionService.getMemoTemplates();
+        return ResponseEntity.ok(templates);
+    }
+    
+    @Operation(
+        summary = "가족 세션 정보 업데이트",
+        description = "가족 별명과 메모지 템플릿을 업데이트합니다. 관리자만 가능합니다.",
+        security = @SecurityRequirement(name = "Bearer Authentication")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "가족 세션 정보 업데이트 성공",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = FamilySessionResponse.class)
+            )),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+        @ApiResponse(responseCode = "403", description = "권한 없음"),
+        @ApiResponse(responseCode = "404", description = "세션을 찾을 수 없음"),
+        @ApiResponse(responseCode = "401", description = "인증 실패")
+    })
+    @PutMapping("/my-session/update")
+    public ResponseEntity<FamilySessionResponse> updateFamilySessionInfo(
+            @Parameter(description = "가족 별명", example = "조버드네")
+            @RequestParam(value = "familyNickname", required = false) String familyNickname,
+            @Parameter(description = "메모지 템플릿 ID", example = "HOUSE_PATTERN")
+            @RequestParam(value = "memoTemplateId", required = false) String memoTemplateId,
+            Authentication authentication) {
+        
+        User user = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
+        
+        FamilySessionResponse response = familySessionService.updateFamilySessionInfo(user, familyNickname, memoTemplateId);
+        return ResponseEntity.ok(response);
+    }
+    
 }

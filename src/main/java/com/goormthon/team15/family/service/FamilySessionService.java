@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 @Service
 @Transactional
@@ -358,6 +359,8 @@ public class FamilySessionService {
                 familySession.getStatus().name(),
                 familySession.getMaxMembers(),
                 activeMembers.size(),
+                familySession.getFamilyNickname(),
+                familySession.getMemoTemplateId(),
                 memberInfos,
                 familySession.getCreatedAt(),
                 familySession.getUpdatedAt()
@@ -447,5 +450,126 @@ public class FamilySessionService {
                 .findByFamilySessionAndUserAndStatus(familySession, user, SessionMember.MemberStatus.ACTIVE)
                 .map(member -> member.getFamilyRelationship() != null ? member.getFamilyRelationship().name() : null)
                 .orElse(null);
+    }
+    
+    /**
+     * 가족 설정 및 세션 생성
+     */
+    public FamilySessionResponse setupFamilyAndCreateSession(FamilySetupRequest request, User user) {
+        // 사용자 닉네임 설정
+        if (request.getUserNickname() != null && !request.getUserNickname().trim().isEmpty()) {
+            user.setNickname(request.getUserNickname());
+            userRepository.save(user);
+        }
+        
+        // 가족 세션 생성
+        String inviteCode = generateUniqueInviteCode();
+        
+        FamilySession familySession = new FamilySession(
+                request.getSessionName() != null ? request.getSessionName() : "우리 가족의 2025년 다짐",
+                request.getSessionDescription(),
+                inviteCode,
+                null, // 세션 비밀번호는 선택사항
+                user
+        );
+        
+        // 가족 별명과 메모지 템플릿 설정
+        familySession.setFamilyNickname(request.getFamilyNickname());
+        familySession.setMemoTemplateId(request.getMemoTemplateId());
+        
+        familySession = familySessionRepository.save(familySession);
+        
+        // 생성자를 세션 멤버로 추가
+        SessionMember creatorMember = new SessionMember(familySession, user, SessionMember.MemberRole.ADMIN);
+        sessionMemberRepository.save(creatorMember);
+        
+        return convertToResponse(familySession);
+    }
+    
+    /**
+     * 메모지 템플릿 목록 조회
+     */
+    public List<MemoTemplateResponse> getMemoTemplates() {
+        List<MemoTemplateResponse> templates = new ArrayList<>();
+        
+        // 집 패턴
+        MemoTemplateResponse.ColorInfo houseColors = new MemoTemplateResponse.ColorInfo(
+                "#E0F6FF", "#FFD700", "#FFB6C1", "#F0F8FF"
+        );
+        templates.add(new MemoTemplateResponse(
+                "HOUSE_PATTERN", "집 패턴", "집 모양이 그려진 메모지", houseColors, "HOUSE", "/images/memo-templates/house-pattern.png"
+        ));
+        
+        // 해 패턴
+        MemoTemplateResponse.ColorInfo sunColors = new MemoTemplateResponse.ColorInfo(
+                "#FFD700", "#FFA500", "#FFE4B5", "#FFFACD"
+        );
+        templates.add(new MemoTemplateResponse(
+                "SUN_PATTERN", "해 패턴", "해 모양이 그려진 메모지", sunColors, "SUN", "/images/memo-templates/sun-pattern.png"
+        ));
+        
+        // 산 패턴
+        MemoTemplateResponse.ColorInfo mountainColors = new MemoTemplateResponse.ColorInfo(
+                "#90EE90", "#228B22", "#98FB98", "#F0FFF0"
+        );
+        templates.add(new MemoTemplateResponse(
+                "MOUNTAIN_PATTERN", "산 패턴", "산 모양이 그려진 메모지", mountainColors, "MOUNTAIN", "/images/memo-templates/mountain-pattern.png"
+        ));
+        
+        // 달력 패턴
+        MemoTemplateResponse.ColorInfo calendarColors = new MemoTemplateResponse.ColorInfo(
+                "#DDA0DD", "#9370DB", "#E6E6FA", "#F8F8FF"
+        );
+        templates.add(new MemoTemplateResponse(
+                "CALENDAR_PATTERN", "달력 패턴", "달력 모양이 그려진 메모지", calendarColors, "CALENDAR", "/images/memo-templates/calendar-pattern.png"
+        ));
+        
+        // 구름 패턴
+        MemoTemplateResponse.ColorInfo cloudColors = new MemoTemplateResponse.ColorInfo(
+                "#87CEEB", "#B0E0E6", "#E0FFFF", "#F0FFFF"
+        );
+        templates.add(new MemoTemplateResponse(
+                "CLOUD_PATTERN", "구름 패턴", "구름 모양이 그려진 메모지", cloudColors, "CLOUD", "/images/memo-templates/cloud-pattern.png"
+        ));
+        
+        // 별 패턴
+        MemoTemplateResponse.ColorInfo starColors = new MemoTemplateResponse.ColorInfo(
+                "#FFD700", "#FFA500", "#FFE4B5", "#FFFACD"
+        );
+        templates.add(new MemoTemplateResponse(
+                "STAR_PATTERN", "별 패턴", "별 모양이 그려진 메모지", starColors, "STAR", "/images/memo-templates/star-pattern.png"
+        ));
+        
+        return templates;
+    }
+    
+    /**
+     * 가족 세션 정보 업데이트
+     */
+    public FamilySessionResponse updateFamilySessionInfo(User user, String familyNickname, String memoTemplateId) {
+        // 사용자가 참여한 가족 세션 조회
+        SessionMember sessionMember = sessionMemberRepository
+                .findByUserAndStatus(user, SessionMember.MemberStatus.ACTIVE)
+                .orElseThrow(() -> new RuntimeException("참여한 가족 세션이 없습니다"));
+        
+        FamilySession familySession = sessionMember.getFamilySession();
+        
+        // 관리자 권한 확인
+        if (sessionMember.getRole() != SessionMember.MemberRole.ADMIN) {
+            throw new RuntimeException("관리자만 가족 세션 정보를 수정할 수 있습니다");
+        }
+        
+        // 정보 업데이트
+        if (familyNickname != null && !familyNickname.trim().isEmpty()) {
+            familySession.setFamilyNickname(familyNickname);
+        }
+        
+        if (memoTemplateId != null && !memoTemplateId.trim().isEmpty()) {
+            familySession.setMemoTemplateId(memoTemplateId);
+        }
+        
+        familySession = familySessionRepository.save(familySession);
+        
+        return convertToResponse(familySession);
     }
 }

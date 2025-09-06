@@ -32,6 +32,12 @@ public class FamilySessionResponse {
     @Schema(description = "현재 참여자 수", example = "3")
     private Integer currentMemberCount;
     
+    @Schema(description = "가족 별명", example = "조버드네")
+    private String familyNickname;
+    
+    @Schema(description = "메모지 템플릿 ID", example = "HOUSE_PATTERN")
+    private String memoTemplateId;
+    
     @Schema(description = "참여자 목록")
     private List<MemberInfo> members;
     
@@ -45,8 +51,8 @@ public class FamilySessionResponse {
     
     public FamilySessionResponse(Long id, String name, String description, String inviteCode,
                                 CreatorInfo creator, String status, Integer maxMembers,
-                                Integer currentMemberCount, List<MemberInfo> members,
-                                LocalDateTime createdAt, LocalDateTime updatedAt) {
+                                Integer currentMemberCount, String familyNickname, String memoTemplateId,
+                                List<MemberInfo> members, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -55,6 +61,8 @@ public class FamilySessionResponse {
         this.status = status;
         this.maxMembers = maxMembers;
         this.currentMemberCount = currentMemberCount;
+        this.familyNickname = familyNickname;
+        this.memoTemplateId = memoTemplateId;
         this.members = members;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -147,6 +155,22 @@ public class FamilySessionResponse {
     
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+    
+    public String getFamilyNickname() {
+        return familyNickname;
+    }
+    
+    public void setFamilyNickname(String familyNickname) {
+        this.familyNickname = familyNickname;
+    }
+    
+    public String getMemoTemplateId() {
+        return memoTemplateId;
+    }
+    
+    public void setMemoTemplateId(String memoTemplateId) {
+        this.memoTemplateId = memoTemplateId;
     }
     
     @Schema(description = "생성자 정보")

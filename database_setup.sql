@@ -34,6 +34,10 @@ CREATE TABLE IF NOT EXISTS users (
 -- 기존 session_members 테이블에 family_relationship 컬럼 추가 (이미 있다면 무시)
 -- ALTER TABLE session_members ADD COLUMN IF NOT EXISTS family_relationship ENUM('FATHER', 'MOTHER', 'SON', 'DAUGHTER', 'BROTHER', 'SISTER', 'GRANDFATHER', 'GRANDMOTHER', 'UNCLE', 'AUNT', 'COUSIN', 'OTHER') AFTER status;
 
+-- 기존 family_sessions 테이블에 family_nickname, memo_template_id 컬럼 추가 (이미 있다면 무시)
+-- ALTER TABLE family_sessions ADD COLUMN IF NOT EXISTS family_nickname VARCHAR(50) AFTER max_members;
+-- ALTER TABLE family_sessions ADD COLUMN IF NOT EXISTS memo_template_id VARCHAR(50) AFTER family_nickname;
+
 -- 가족 세션 테이블
 CREATE TABLE IF NOT EXISTS family_sessions (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -44,6 +48,8 @@ CREATE TABLE IF NOT EXISTS family_sessions (
     creator_id BIGINT NOT NULL,
     status ENUM('ACTIVE', 'INACTIVE', 'COMPLETED') NOT NULL DEFAULT 'ACTIVE',
     max_members INT DEFAULT 10,
+    family_nickname VARCHAR(50),
+    memo_template_id VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE

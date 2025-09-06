@@ -46,6 +46,14 @@ public class FamilySession {
     @Column(name = "max_members")
     private Integer maxMembers = 10; // 기본 최대 10명
     
+    @Size(max = 50)
+    @Column(name = "family_nickname")
+    private String familyNickname;
+    
+    @Size(max = 50)
+    @Column(name = "memo_template_id")
+    private String memoTemplateId;
+    
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     
@@ -140,6 +148,22 @@ public class FamilySession {
     
     public void setMaxMembers(Integer maxMembers) {
         this.maxMembers = maxMembers;
+    }
+    
+    public String getFamilyNickname() {
+        return familyNickname;
+    }
+    
+    public void setFamilyNickname(String familyNickname) {
+        this.familyNickname = familyNickname;
+    }
+    
+    public String getMemoTemplateId() {
+        return memoTemplateId;
+    }
+    
+    public void setMemoTemplateId(String memoTemplateId) {
+        this.memoTemplateId = memoTemplateId;
     }
     
     public LocalDateTime getCreatedAt() {
