@@ -178,6 +178,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
     
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalStateException(
+            IllegalStateException ex, HttpServletRequest request) {
+        logger.warn("Illegal state: {}", ex.getMessage());
+        
+        ErrorResponse errorResponse = new ErrorResponse(
+            "ILLEGAL_STATE",
+            ex.getMessage(),
+            request.getRequestURI()
+        );
+        
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+    
     @ExceptionHandler(ResolutionNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResolutionNotFoundException(
             ResolutionNotFoundException ex, HttpServletRequest request) {

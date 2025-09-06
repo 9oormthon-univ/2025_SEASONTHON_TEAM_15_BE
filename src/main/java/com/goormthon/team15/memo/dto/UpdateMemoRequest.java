@@ -21,6 +21,7 @@ public class UpdateMemoRequest {
         this.content = content;
     }
     
+    
     // Getters and Setters
     public String getTitle() {
         return title;

@@ -46,6 +46,14 @@ public class FamilySession {
     @Column(name = "max_members")
     private Integer maxMembers = 10; // 기본 최대 10명
     
+    @Size(max = 50)
+    @Column(name = "family_nickname")
+    private String familyNickname;
+    
+    @Size(max = 50)
+    @Column(name = "memo_template_id")
+    private String memoTemplateId;
+    
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     
@@ -142,6 +150,22 @@ public class FamilySession {
         this.maxMembers = maxMembers;
     }
     
+    public String getFamilyNickname() {
+        return familyNickname;
+    }
+    
+    public void setFamilyNickname(String familyNickname) {
+        this.familyNickname = familyNickname;
+    }
+    
+    public String getMemoTemplateId() {
+        return memoTemplateId;
+    }
+    
+    public void setMemoTemplateId(String memoTemplateId) {
+        this.memoTemplateId = memoTemplateId;
+    }
+    
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -168,7 +192,9 @@ public class FamilySession {
     
     // 비즈니스 메서드
     public boolean isFull() {
-        return members.size() >= maxMembers;
+        // 활성 멤버 수를 정확히 계산하기 위해 서비스 레이어에서 처리
+        // 여기서는 기본적인 체크만 수행
+        return false; // 실제 체크는 FamilySessionService에서 수행
     }
     
     public boolean isCreator(User user) {

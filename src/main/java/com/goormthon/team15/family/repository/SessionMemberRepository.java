@@ -67,4 +67,9 @@ public interface SessionMemberRepository extends JpaRepository<SessionMember, Lo
     @Query("UPDATE SessionMember sm SET sm.status = 'LEFT' " +
            "WHERE sm.familySession = :familySession AND sm.user = :user")
     void leaveSession(@Param("familySession") FamilySession familySession, @Param("user") User user);
+    
+    /**
+     * 사용자가 참여한 활성 세션 조회 (단일 세션)
+     */
+    Optional<SessionMember> findByUserAndStatus(User user, SessionMember.MemberStatus status);
 }

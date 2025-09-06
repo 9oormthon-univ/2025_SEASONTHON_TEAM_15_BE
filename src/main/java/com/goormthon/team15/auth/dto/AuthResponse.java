@@ -24,6 +24,9 @@ public class AuthResponse {
     @Schema(description = "역할", example = "USER")
     private String role;
     
+    @Schema(description = "메모지 색깔", example = "YELLOW")
+    private String memoColor;
+    
     public AuthResponse() {}
     
     public AuthResponse(String token, String username, String phoneNumber, String generation, String role) {
@@ -32,6 +35,15 @@ public class AuthResponse {
         this.phoneNumber = phoneNumber;
         this.generation = generation;
         this.role = role;
+    }
+    
+    public AuthResponse(String token, String username, String phoneNumber, String generation, String role, String memoColor) {
+        this.token = token;
+        this.username = username;
+        this.phoneNumber = phoneNumber;
+        this.generation = generation;
+        this.role = role;
+        this.memoColor = memoColor;
     }
     
     // Getters and Setters
@@ -82,5 +94,13 @@ public class AuthResponse {
     
     public void setRole(String role) {
         this.role = role;
+    }
+    
+    public String getMemoColor() {
+        return memoColor;
+    }
+    
+    public void setMemoColor(String memoColor) {
+        this.memoColor = memoColor;
     }
 }

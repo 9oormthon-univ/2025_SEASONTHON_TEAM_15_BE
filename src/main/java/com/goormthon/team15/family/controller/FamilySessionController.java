@@ -18,6 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 @RestController
 @RequestMapping("/v1/api/family-sessions")
@@ -30,6 +32,32 @@ public class FamilySessionController {
     
     @Autowired
     private UserRepository userRepository;
+    
+    // 현재 사용자의 가족 세션 정보 조회 (단일 세션)
+    @Operation(
+        summary = "내 가족 세션 조회",
+        description = "현재 사용자가 참여한 가족 세션 정보를 조회합니다.",
+        security = @SecurityRequirement(name = "Bearer Authentication")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "세션 조회 성공",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = FamilySessionResponse.class)
+            )),
+        @ApiResponse(responseCode = "404", description = "참여한 가족 세션이 없음"),
+        @ApiResponse(responseCode = "401", description = "인증 실패")
+    })
+    @GetMapping("/my-session")
+    public ResponseEntity<FamilySessionResponse> getMyFamilySession(
+            Authentication authentication) {
+        
+        User user = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
+        
+        FamilySessionResponse response = familySessionService.getUserFamilySession(user);
+        return ResponseEntity.ok(response);
+    }
     
     @Operation(
         summary = "가족 세션 생성",
@@ -95,57 +123,6 @@ public class FamilySessionController {
         return ResponseEntity.ok(response);
     }
     
-    @Operation(
-        summary = "사용자 가족 세션 목록 조회",
-        description = "현재 사용자가 참여한 모든 가족 세션 목록을 조회합니다.",
-        security = @SecurityRequirement(name = "Bearer Authentication")
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "세션 목록 조회 성공",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = FamilySessionResponse.class)
-            )),
-        @ApiResponse(responseCode = "401", description = "인증 실패")
-    })
-    @GetMapping("/my-sessions")
-    public ResponseEntity<List<FamilySessionResponse>> getMyFamilySessions(
-            Authentication authentication) {
-        
-        User user = userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
-        
-        List<FamilySessionResponse> responses = familySessionService.getUserFamilySessions(user);
-        return ResponseEntity.ok(responses);
-    }
-    
-    @Operation(
-        summary = "가족 세션 상세 조회",
-        description = "특정 가족 세션의 상세 정보를 조회합니다. 세션 참여자만 조회 가능합니다.",
-        security = @SecurityRequirement(name = "Bearer Authentication")
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "세션 상세 조회 성공",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = FamilySessionResponse.class)
-            )),
-        @ApiResponse(responseCode = "403", description = "세션 접근 권한 없음"),
-        @ApiResponse(responseCode = "404", description = "세션을 찾을 수 없음"),
-        @ApiResponse(responseCode = "401", description = "인증 실패")
-    })
-    @GetMapping("/{sessionId}")
-    public ResponseEntity<FamilySessionResponse> getFamilySession(
-            @Parameter(description = "세션 ID", required = true, example = "1")
-            @PathVariable Long sessionId,
-            Authentication authentication) {
-        
-        User user = userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
-        
-        FamilySessionResponse response = familySessionService.getFamilySession(sessionId, user);
-        return ResponseEntity.ok(response);
-    }
     
     @Operation(
         summary = "가족 세션 탈퇴",
@@ -196,30 +173,179 @@ public class FamilySessionController {
     }
     
     @Operation(
-        summary = "초대 URL 생성",
-        description = "가족 세션의 초대 URL을 생성합니다. 생성자나 멤버만 생성할 수 있습니다.",
+        summary = "내 가족 세션 멤버 목록 조회",
+        description = "현재 사용자가 참여한 가족 세션의 참여자 목록을 조회합니다.",
         security = @SecurityRequirement(name = "Bearer Authentication")
     )
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "초대 URL 생성 성공",
+        @ApiResponse(responseCode = "200", description = "멤버 목록 조회 성공",
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(implementation = InviteUrlResponse.class)
+                schema = @Schema(implementation = FamilySessionResponse.MemberInfo.class)
             )),
-        @ApiResponse(responseCode = "403", description = "세션 접근 권한 없음"),
-        @ApiResponse(responseCode = "404", description = "세션을 찾을 수 없음"),
+        @ApiResponse(responseCode = "404", description = "참여한 가족 세션이 없음"),
         @ApiResponse(responseCode = "401", description = "인증 실패")
     })
-    @GetMapping("/{sessionId}/invite-url")
-    public ResponseEntity<InviteUrlResponse> generateInviteUrl(
-            @Parameter(description = "세션 ID", required = true, example = "1")
-            @PathVariable Long sessionId,
+    @GetMapping("/my-session/members")
+    public ResponseEntity<List<FamilySessionResponse.MemberInfo>> getMyFamilySessionMembers(
             Authentication authentication) {
         
         User user = userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
         
-        InviteUrlResponse response = familySessionService.generateInviteUrl(sessionId, user);
+        List<FamilySessionResponse.MemberInfo> members = familySessionService.getMyFamilySessionMembers(user);
+        return ResponseEntity.ok(members);
+    }
+    
+    @Operation(
+        summary = "가족 구성원 관계 설정",
+        description = "가족 세션 멤버의 가족 관계를 설정합니다.",
+        security = @SecurityRequirement(name = "Bearer Authentication")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "관계 설정 성공"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+        @ApiResponse(responseCode = "403", description = "권한 없음"),
+        @ApiResponse(responseCode = "404", description = "멤버를 찾을 수 없음"),
+        @ApiResponse(responseCode = "401", description = "인증 실패")
+    })
+    @PutMapping("/members/{memberId}/relationship")
+    public ResponseEntity<String> setFamilyRelationship(
+            @Parameter(description = "멤버 ID", required = true, example = "1")
+            @PathVariable Long memberId,
+            @Parameter(description = "가족 관계", required = true, example = "FATHER")
+            @RequestParam("relationship") String relationship,
+            Authentication authentication) {
+        
+        User user = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
+        
+        familySessionService.setFamilyRelationship(memberId, relationship, user);
+        return ResponseEntity.ok("가족 관계가 설정되었습니다");
+    }
+    
+    @Operation(
+        summary = "D-Day 계산",
+        description = "2026년까지 남은 일수를 계산합니다.",
+        security = @SecurityRequirement(name = "Bearer Authentication")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "D-Day 계산 성공",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = DdayResponse.class)
+            )),
+        @ApiResponse(responseCode = "404", description = "참여한 가족 세션이 없음"),
+        @ApiResponse(responseCode = "401", description = "인증 실패")
+    })
+    @GetMapping("/my-session/dday")
+    public ResponseEntity<DdayResponse> getDday(Authentication authentication) {
+        // 2026년 1월 1일을 목표 날짜로 설정
+        LocalDate targetDate = LocalDate.of(2026, 1, 1);
+        LocalDate today = LocalDate.now();
+        
+        long daysLeft = ChronoUnit.DAYS.between(today, targetDate);
+        String ddayMessage = String.format("2026년 D-%d", daysLeft);
+        
+        DdayResponse response = new DdayResponse(targetDate, daysLeft, ddayMessage, 2026);
         return ResponseEntity.ok(response);
     }
+    
+    @Operation(
+        summary = "가족별 신년 다짐 조회",
+        description = "현재 가족 세션의 모든 신년 다짐을 조회합니다.",
+        security = @SecurityRequirement(name = "Bearer Authentication")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "신년 다짐 조회 성공",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = ResolutionResponse.class)
+            )),
+        @ApiResponse(responseCode = "404", description = "참여한 가족 세션이 없음"),
+        @ApiResponse(responseCode = "401", description = "인증 실패")
+    })
+    @GetMapping("/my-session/resolutions")
+    public ResponseEntity<List<ResolutionResponse>> getFamilyResolutions(Authentication authentication) {
+        User user = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
+        
+        List<ResolutionResponse> resolutions = familySessionService.getFamilyResolutions(user);
+        return ResponseEntity.ok(resolutions);
+    }
+    
+    @Operation(
+        summary = "가족 설정 및 세션 생성",
+        description = "가족 별명, 사용자 닉네임, 메모지 템플릿을 설정하고 가족 세션을 생성합니다.",
+        security = @SecurityRequirement(name = "Bearer Authentication")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "가족 설정 및 세션 생성 성공",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = FamilySessionResponse.class)
+            )),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+        @ApiResponse(responseCode = "401", description = "인증 실패")
+    })
+    @PostMapping("/setup-and-create")
+    public ResponseEntity<FamilySessionResponse> setupFamilyAndCreateSession(
+            @RequestBody FamilySetupRequest request,
+            Authentication authentication) {
+        
+        User user = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
+        
+        FamilySessionResponse response = familySessionService.setupFamilyAndCreateSession(request, user);
+        return ResponseEntity.ok(response);
+    }
+    
+    @Operation(
+        summary = "메모지 템플릿 목록 조회",
+        description = "사용 가능한 메모지 템플릿 목록을 조회합니다. 공개 API로 인증이 필요하지 않습니다."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "메모지 템플릿 목록 조회 성공",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = MemoTemplateResponse.class)
+            ))
+    })
+    @GetMapping("/memo-templates")
+    public ResponseEntity<List<MemoTemplateResponse>> getMemoTemplates() {
+        List<MemoTemplateResponse> templates = familySessionService.getMemoTemplates();
+        return ResponseEntity.ok(templates);
+    }
+    
+    @Operation(
+        summary = "가족 세션 정보 업데이트",
+        description = "가족 별명과 메모지 템플릿을 업데이트합니다. 관리자만 가능합니다.",
+        security = @SecurityRequirement(name = "Bearer Authentication")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "가족 세션 정보 업데이트 성공",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = FamilySessionResponse.class)
+            )),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+        @ApiResponse(responseCode = "403", description = "권한 없음"),
+        @ApiResponse(responseCode = "404", description = "세션을 찾을 수 없음"),
+        @ApiResponse(responseCode = "401", description = "인증 실패")
+    })
+    @PutMapping("/my-session/update")
+    public ResponseEntity<FamilySessionResponse> updateFamilySessionInfo(
+            @Parameter(description = "가족 별명", example = "조버드네")
+            @RequestParam(value = "familyNickname", required = false) String familyNickname,
+            @Parameter(description = "메모지 템플릿 ID", example = "HOUSE_PATTERN")
+            @RequestParam(value = "memoTemplateId", required = false) String memoTemplateId,
+            Authentication authentication) {
+        
+        User user = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
+        
+        FamilySessionResponse response = familySessionService.updateFamilySessionInfo(user, familyNickname, memoTemplateId);
+        return ResponseEntity.ok(response);
+    }
+    
 }

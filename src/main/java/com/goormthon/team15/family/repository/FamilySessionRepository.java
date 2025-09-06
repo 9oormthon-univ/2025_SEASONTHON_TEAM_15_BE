@@ -62,4 +62,12 @@ public interface FamilySessionRepository extends JpaRepository<FamilySession, Lo
      * 사용자가 특정 세션의 생성자인지 확인
      */
     boolean existsByIdAndCreator(Long sessionId, User creator);
+    
+    /**
+     * 사용자가 활성 상태인 가족 세션에 참여하고 있는지 확인
+     */
+    @Query("SELECT COUNT(fs) > 0 FROM FamilySession fs " +
+           "WHERE (fs.creator = :user OR EXISTS (SELECT 1 FROM SessionMember sm WHERE sm.familySession = fs AND sm.user = :user AND sm.status = 'ACTIVE')) " +
+           "AND fs.status = 'ACTIVE'")
+    boolean hasUserActiveSessions(@Param("user") User user);
 }

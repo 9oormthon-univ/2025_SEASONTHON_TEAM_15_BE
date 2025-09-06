@@ -1,6 +1,5 @@
 package com.goormthon.team15.family.dto;
 
-import com.goormthon.team15.family.entity.FamilySession;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
@@ -33,6 +32,12 @@ public class FamilySessionResponse {
     @Schema(description = "현재 참여자 수", example = "3")
     private Integer currentMemberCount;
     
+    @Schema(description = "가족 별명", example = "조버드네")
+    private String familyNickname;
+    
+    @Schema(description = "메모지 템플릿 ID", example = "HOUSE_PATTERN")
+    private String memoTemplateId;
+    
     @Schema(description = "참여자 목록")
     private List<MemberInfo> members;
     
@@ -46,8 +51,8 @@ public class FamilySessionResponse {
     
     public FamilySessionResponse(Long id, String name, String description, String inviteCode,
                                 CreatorInfo creator, String status, Integer maxMembers,
-                                Integer currentMemberCount, List<MemberInfo> members,
-                                LocalDateTime createdAt, LocalDateTime updatedAt) {
+                                Integer currentMemberCount, String familyNickname, String memoTemplateId,
+                                List<MemberInfo> members, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -56,6 +61,8 @@ public class FamilySessionResponse {
         this.status = status;
         this.maxMembers = maxMembers;
         this.currentMemberCount = currentMemberCount;
+        this.familyNickname = familyNickname;
+        this.memoTemplateId = memoTemplateId;
         this.members = members;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -150,6 +157,22 @@ public class FamilySessionResponse {
         this.updatedAt = updatedAt;
     }
     
+    public String getFamilyNickname() {
+        return familyNickname;
+    }
+    
+    public void setFamilyNickname(String familyNickname) {
+        this.familyNickname = familyNickname;
+    }
+    
+    public String getMemoTemplateId() {
+        return memoTemplateId;
+    }
+    
+    public void setMemoTemplateId(String memoTemplateId) {
+        this.memoTemplateId = memoTemplateId;
+    }
+    
     @Schema(description = "생성자 정보")
     public static class CreatorInfo {
         @Schema(description = "사용자 ID", example = "1")
@@ -221,16 +244,20 @@ public class FamilySessionResponse {
         @Schema(description = "상태", example = "ACTIVE")
         private String status;
         
+        @Schema(description = "가족 관계", example = "FATHER")
+        private String familyRelationship;
+        
         @Schema(description = "참여일시", example = "2025-01-01T00:00:00")
         private LocalDateTime joinedAt;
         
         public MemberInfo() {}
         
-        public MemberInfo(Long id, CreatorInfo user, String role, String status, LocalDateTime joinedAt) {
+        public MemberInfo(Long id, CreatorInfo user, String role, String status, String familyRelationship, LocalDateTime joinedAt) {
             this.id = id;
             this.user = user;
             this.role = role;
             this.status = status;
+            this.familyRelationship = familyRelationship;
             this.joinedAt = joinedAt;
         }
         
@@ -273,6 +300,14 @@ public class FamilySessionResponse {
         
         public void setJoinedAt(LocalDateTime joinedAt) {
             this.joinedAt = joinedAt;
+        }
+        
+        public String getFamilyRelationship() {
+            return familyRelationship;
+        }
+        
+        public void setFamilyRelationship(String familyRelationship) {
+            this.familyRelationship = familyRelationship;
         }
     }
 }
