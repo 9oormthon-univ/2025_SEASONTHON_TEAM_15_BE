@@ -27,8 +27,7 @@ public class SwaggerConfig {
                         .version("1.0.0")
                         .license(new License().name("Apache 2.0").url("http://springdoc.org")))
                 .servers(List.of(
-                        new Server().url("http://localhost:" + serverPort).description("로컬 개발 서버"),
-                        new Server().url("https://your-domain.com").description("프로덕션 서버")
+                        new Server().url("http://localhost:" + serverPort).description("로컬 개발 서버")
                 ))
                 .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
                 .components(new Components()
