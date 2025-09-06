@@ -61,11 +61,8 @@ public class InviteController {
         int currentMemberCount = (int) sessionMemberRepository.countByFamilySessionAndStatus(
                 familySession, SessionMember.MemberStatus.ACTIVE);
         
-        // 초대 URL 생성
-        String inviteUrl = baseUrl + "/v1/api/invite/" + familySession.getInviteCode();
-        
         InviteUrlResponse response = new InviteUrlResponse(
-                inviteUrl,
+                null, // URL은 더 이상 사용하지 않음
                 familySession.getSessionPassword() != null && !familySession.getSessionPassword().isEmpty(),
                 familySession.getInviteCode(),
                 familySession.getName(),

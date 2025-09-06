@@ -51,6 +51,9 @@ public class User implements UserDetails {
     @Column(name = "memo_color", nullable = false)
     private MemoColor memoColor = MemoColor.YELLOW;
     
+    @Column(name = "has_family", nullable = false)
+    private Boolean hasFamily = false;
+    
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     
@@ -159,6 +162,14 @@ public class User implements UserDetails {
     
     public void setMemoColor(MemoColor memoColor) {
         this.memoColor = memoColor;
+    }
+    
+    public Boolean getHasFamily() {
+        return hasFamily;
+    }
+    
+    public void setHasFamily(Boolean hasFamily) {
+        this.hasFamily = hasFamily;
     }
     
     public LocalDateTime getCreatedAt() {

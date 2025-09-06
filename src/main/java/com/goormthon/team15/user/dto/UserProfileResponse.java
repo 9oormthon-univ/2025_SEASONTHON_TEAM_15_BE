@@ -24,6 +24,9 @@ public class UserProfileResponse {
     @Schema(description = "메모지 색깔", example = "YELLOW")
     private String memoColor;
     
+    @Schema(description = "가족 가입 여부", example = "true")
+    private Boolean hasFamily;
+    
     @Schema(description = "생성일시", example = "2025-01-01T00:00:00")
     private String createdAt;
     
@@ -33,13 +36,14 @@ public class UserProfileResponse {
     public UserProfileResponse() {}
     
     public UserProfileResponse(Long id, String username, String phoneNumber, 
-                              String generation, String role, String memoColor, String createdAt, String updatedAt) {
+                              String generation, String role, String memoColor, Boolean hasFamily, String createdAt, String updatedAt) {
         this.id = id;
         this.username = username;
         this.phoneNumber = phoneNumber;
         this.generation = generation;
         this.role = role;
         this.memoColor = memoColor;
+        this.hasFamily = hasFamily;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -92,6 +96,14 @@ public class UserProfileResponse {
     
     public void setMemoColor(String memoColor) {
         this.memoColor = memoColor;
+    }
+    
+    public Boolean getHasFamily() {
+        return hasFamily;
+    }
+    
+    public void setHasFamily(Boolean hasFamily) {
+        this.hasFamily = hasFamily;
     }
     
     public String getCreatedAt() {

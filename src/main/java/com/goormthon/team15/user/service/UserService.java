@@ -31,6 +31,7 @@ public class UserService {
             user.getGeneration() != null ? user.getGeneration().name() : null,
             user.getRole().name(),
             user.getMemoColor().name(),
+            user.getHasFamily(),
             user.getCreatedAt() != null ? user.getCreatedAt().toString() : null,
             user.getUpdatedAt() != null ? user.getUpdatedAt().toString() : null
         );
@@ -82,6 +83,7 @@ public class UserService {
             updatedUser.getGeneration() != null ? updatedUser.getGeneration().name() : null,
             updatedUser.getRole().name(),
             updatedUser.getMemoColor().name(),
+            updatedUser.getHasFamily(),
             updatedUser.getCreatedAt() != null ? updatedUser.getCreatedAt().toString() : null,
             updatedUser.getUpdatedAt() != null ? updatedUser.getUpdatedAt().toString() : null
         );

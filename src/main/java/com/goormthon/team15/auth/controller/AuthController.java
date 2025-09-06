@@ -73,7 +73,7 @@ public class AuthController {
     })
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
-            @Parameter(description = "사용자명", required = true, example = "testuser")
+            @Parameter(description = "사용자명 또는 전화번호", required = true, example = "testuser")
             @RequestParam("username") String username,
             @Parameter(description = "비밀번호", required = true, example = "password123")
             @RequestParam("password") String password) {
@@ -103,6 +103,39 @@ public class AuthController {
             @RequestParam("token") String token) {
         LogoutRequest request = new LogoutRequest(token);
         LogoutResponse response = authService.logout(request);
+        return ResponseEntity.ok(response);
+    }
+    
+    @Operation(
+        summary = "회원가입 + 가족 가입", 
+        description = "회원가입과 가족 가입을 동시에 처리합니다. 가족 가입에 실패하면 회원가입도 취소됩니다."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "회원가입 및 가족 가입 성공",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = AuthResponse.class)
+            )),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청 또는 가족 가입 실패"),
+        @ApiResponse(responseCode = "409", description = "이미 존재하는 사용자")
+    })
+    @PostMapping("/register-with-family")
+    public ResponseEntity<AuthResponse> registerWithFamilyJoin(
+            @Parameter(description = "사용자명", required = true, example = "testuser")
+            @RequestParam("username") String username,
+            @Parameter(description = "전화번호", required = true, example = "010-1234-5678")
+            @RequestParam("phoneNumber") String phoneNumber,
+            @Parameter(description = "비밀번호", required = true, example = "password123")
+            @RequestParam("password") String password,
+            @Parameter(description = "세대 (선택사항)", example = "TWENTIES")
+            @RequestParam(value = "generation", required = false) String generation,
+            @Parameter(description = "가족 초대코드 (선택사항)", example = "ABC123")
+            @RequestParam(value = "inviteCode", required = false) String inviteCode,
+            @Parameter(description = "세션 비밀번호 (가족 세션에 비밀번호가 설정된 경우 필수)", example = "family2025")
+            @RequestParam(value = "sessionPassword", required = false) String sessionPassword) {
+        
+        RegisterRequest request = new RegisterRequest(username, phoneNumber, password, generation);
+        AuthResponse response = authService.registerWithFamilyJoin(request, inviteCode, sessionPassword);
         return ResponseEntity.ok(response);
     }
 }

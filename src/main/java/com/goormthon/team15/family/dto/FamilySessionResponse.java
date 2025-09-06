@@ -221,16 +221,20 @@ public class FamilySessionResponse {
         @Schema(description = "상태", example = "ACTIVE")
         private String status;
         
+        @Schema(description = "가족 관계", example = "FATHER")
+        private String familyRelationship;
+        
         @Schema(description = "참여일시", example = "2025-01-01T00:00:00")
         private LocalDateTime joinedAt;
         
         public MemberInfo() {}
         
-        public MemberInfo(Long id, CreatorInfo user, String role, String status, LocalDateTime joinedAt) {
+        public MemberInfo(Long id, CreatorInfo user, String role, String status, String familyRelationship, LocalDateTime joinedAt) {
             this.id = id;
             this.user = user;
             this.role = role;
             this.status = status;
+            this.familyRelationship = familyRelationship;
             this.joinedAt = joinedAt;
         }
         
@@ -273,6 +277,14 @@ public class FamilySessionResponse {
         
         public void setJoinedAt(LocalDateTime joinedAt) {
             this.joinedAt = joinedAt;
+        }
+        
+        public String getFamilyRelationship() {
+            return familyRelationship;
+        }
+        
+        public void setFamilyRelationship(String familyRelationship) {
+            this.familyRelationship = familyRelationship;
         }
     }
 }

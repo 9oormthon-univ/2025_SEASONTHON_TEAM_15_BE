@@ -29,6 +29,10 @@ public class SessionMember {
     @Column(nullable = false)
     private MemberStatus status = MemberStatus.ACTIVE;
     
+    @Enumerated(EnumType.STRING)
+    @Column(name = "family_relationship")
+    private FamilyRelationship familyRelationship;
+    
     @Column(name = "joined_at")
     private LocalDateTime joinedAt;
     
@@ -112,6 +116,14 @@ public class SessionMember {
         this.lastActiveAt = lastActiveAt;
     }
     
+    public FamilyRelationship getFamilyRelationship() {
+        return familyRelationship;
+    }
+    
+    public void setFamilyRelationship(FamilyRelationship familyRelationship) {
+        this.familyRelationship = familyRelationship;
+    }
+    
     // 비즈니스 메서드
     public boolean isAdmin() {
         return role == MemberRole.ADMIN;
@@ -144,6 +156,31 @@ public class SessionMember {
         private final String displayName;
         
         MemberStatus(String displayName) {
+            this.displayName = displayName;
+        }
+        
+        public String getDisplayName() {
+            return displayName;
+        }
+    }
+    
+    public enum FamilyRelationship {
+        FATHER("아빠"),
+        MOTHER("엄마"),
+        SON("아들"),
+        DAUGHTER("딸"),
+        BROTHER("형/오빠"),
+        SISTER("누나/언니"),
+        GRANDFATHER("할아버지"),
+        GRANDMOTHER("할머니"),
+        UNCLE("삼촌"),
+        AUNT("이모/고모"),
+        COUSIN("사촌"),
+        OTHER("기타");
+        
+        private final String displayName;
+        
+        FamilyRelationship(String displayName) {
             this.displayName = displayName;
         }
         
