@@ -1,8 +1,8 @@
 package com.goormthon.team15.user.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,9 +26,9 @@ public class User implements UserDetails {
     private String username;
     
     @NotBlank
-    @Email
-    @Column(unique = true, nullable = false)
-    private String email;
+    @Pattern(regexp = "^01[016789]-\\d{3,4}-\\d{4}$", message = "올바른 전화번호 형식이 아닙니다 (예: 010-1234-5678)")
+    @Column(unique = true, nullable = false, name = "phone_number")
+    private String phoneNumber;
     
     @NotBlank
     @Size(min = 6)
@@ -110,12 +110,12 @@ public class User implements UserDetails {
         this.username = username;
     }
     
-    public String getEmail() {
-        return email;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
     
-    public void setEmail(String email) {
-        this.email = email;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
     
     public void setPassword(String password) {

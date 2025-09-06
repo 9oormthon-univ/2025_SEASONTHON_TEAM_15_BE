@@ -11,8 +11,8 @@ public class UserProfileResponse {
     @Schema(description = "사용자명", example = "testuser")
     private String username;
     
-    @Schema(description = "이메일", example = "test@example.com")
-    private String email;
+    @Schema(description = "전화번호", example = "010-1234-5678")
+    private String phoneNumber;
     
     
     @Schema(description = "세대", example = "TWENTIES")
@@ -29,11 +29,11 @@ public class UserProfileResponse {
     
     public UserProfileResponse() {}
     
-    public UserProfileResponse(Long id, String username, String email, 
+    public UserProfileResponse(Long id, String username, String phoneNumber, 
                               String generation, String role, String createdAt, String updatedAt) {
         this.id = id;
         this.username = username;
-        this.email = email;
+        this.phoneNumber = phoneNumber;
         this.generation = generation;
         this.role = role;
         this.createdAt = createdAt;
@@ -57,12 +57,12 @@ public class UserProfileResponse {
         this.username = username;
     }
     
-    public String getEmail() {
-        return email;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
     
-    public void setEmail(String email) {
-        this.email = email;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
     
     

@@ -14,8 +14,8 @@ public class AuthResponse {
     @Schema(description = "사용자명", example = "testuser")
     private String username;
     
-    @Schema(description = "이메일", example = "test@example.com")
-    private String email;
+    @Schema(description = "전화번호", example = "010-1234-5678")
+    private String phoneNumber;
     
     
     @Schema(description = "세대", example = "TWENTIES")
@@ -26,10 +26,10 @@ public class AuthResponse {
     
     public AuthResponse() {}
     
-    public AuthResponse(String token, String username, String email, String generation, String role) {
+    public AuthResponse(String token, String username, String phoneNumber, String generation, String role) {
         this.token = token;
         this.username = username;
-        this.email = email;
+        this.phoneNumber = phoneNumber;
         this.generation = generation;
         this.role = role;
     }
@@ -59,12 +59,12 @@ public class AuthResponse {
         this.username = username;
     }
     
-    public String getEmail() {
-        return email;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
     
-    public void setEmail(String email) {
-        this.email = email;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
     
     

@@ -27,7 +27,7 @@ public class UserService {
         return new UserProfileResponse(
             user.getId(),
             user.getUsername(),
-            user.getEmail(),
+            user.getPhoneNumber(),
             user.getGeneration() != null ? user.getGeneration().name() : null,
             user.getRole().name(),
             user.getCreatedAt() != null ? user.getCreatedAt().toString() : null,
@@ -39,12 +39,12 @@ public class UserService {
         User user = userRepository.findByUsername(username)
             .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다"));
         
-        // 이메일 중복 확인
-        if (request.getEmail() != null && !request.getEmail().equals(user.getEmail())) {
-            if (userRepository.existsByEmail(request.getEmail())) {
-                throw new UserAlreadyExistsException("이미 사용 중인 이메일입니다");
+        // 전화번호 중복 확인
+        if (request.getPhoneNumber() != null && !request.getPhoneNumber().equals(user.getPhoneNumber())) {
+            if (userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+                throw new UserAlreadyExistsException("이미 사용 중인 전화번호입니다");
             }
-            user.setEmail(request.getEmail());
+            user.setPhoneNumber(request.getPhoneNumber());
         }
         
         // 비밀번호 업데이트
@@ -67,7 +67,7 @@ public class UserService {
         UserProfileResponse userProfile = new UserProfileResponse(
             updatedUser.getId(),
             updatedUser.getUsername(),
-            updatedUser.getEmail(),
+            updatedUser.getPhoneNumber(),
             updatedUser.getGeneration() != null ? updatedUser.getGeneration().name() : null,
             updatedUser.getRole().name(),
             updatedUser.getCreatedAt() != null ? updatedUser.getCreatedAt().toString() : null,

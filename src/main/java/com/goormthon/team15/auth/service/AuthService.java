@@ -37,15 +37,15 @@ public class AuthService {
             throw new UserAlreadyExistsException("이미 사용 중인 사용자명입니다");
         }
         
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new UserAlreadyExistsException("이미 사용 중인 이메일입니다");
+        if (userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new UserAlreadyExistsException("이미 사용 중인 전화번호입니다");
         }
         
         
         // 사용자 생성
         User user = new User();
         user.setUsername(request.getUsername());
-        user.setEmail(request.getEmail());
+        user.setPhoneNumber(request.getPhoneNumber());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         
         // generation 처리
@@ -66,7 +66,7 @@ public class AuthService {
         return new AuthResponse(
             token,
             savedUser.getUsername(),
-            savedUser.getEmail(),
+            savedUser.getPhoneNumber(),
             savedUser.getGeneration() != null ? savedUser.getGeneration().name() : null,
             savedUser.getRole().name()
         );
@@ -87,7 +87,7 @@ public class AuthService {
         return new AuthResponse(
             token,
             user.getUsername(),
-            user.getEmail(),
+            user.getPhoneNumber(),
             user.getGeneration() != null ? user.getGeneration().name() : null,
             user.getRole().name()
         );
