@@ -255,7 +255,7 @@ public class GlobalExceptionHandler {
         
         ErrorResponse errorResponse = new ErrorResponse(
             "INTERNAL_SERVER_ERROR",
-            "서버 내부 오류가 발생했습니다",
+            "서버 내부 오류가 발생했습니다: " + ex.getMessage(),
             request.getRequestURI()
         );
         
