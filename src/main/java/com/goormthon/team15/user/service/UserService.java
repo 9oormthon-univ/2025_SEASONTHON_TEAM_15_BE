@@ -39,7 +39,7 @@ public class UserService {
         User user = userRepository.findByUsername(username)
             .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다"));
         
-        // 이메일 중복 확인 (다른 사용자가 사용 중인지)
+        // 이메일 중복 확인
         if (request.getEmail() != null && !request.getEmail().equals(user.getEmail())) {
             if (userRepository.existsByEmail(request.getEmail())) {
                 throw new UserAlreadyExistsException("이미 사용 중인 이메일입니다");
