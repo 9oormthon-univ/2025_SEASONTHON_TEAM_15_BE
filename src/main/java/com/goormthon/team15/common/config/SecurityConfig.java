@@ -83,6 +83,7 @@ public class SecurityConfig {
                     .requestMatchers("/v1/api/users/profile", "/v1/api/users/password", "/v1/api/users/account").authenticated()
                     .requestMatchers("/v1/api/users/{userId}").hasRole("ADMIN")
                     .requestMatchers("/v1/api/family-sessions/**").authenticated()
+                    .requestMatchers("/v1/api/memos/**").authenticated()
                     .requestMatchers("/v1/api/invite/**").permitAll()
                     .requestMatchers("/swagger-ui/**").permitAll()
                     .requestMatchers("/v3/api-docs/**").permitAll()
