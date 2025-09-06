@@ -79,7 +79,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> 
                 auth.requestMatchers("/v1/api/auth/register", "/v1/api/auth/login", "/v1/api/auth/logout").permitAll()
                     .requestMatchers("/v1/api/auth/email", "/v1/api/auth/account").authenticated()
-                    .requestMatchers("/v1/api/users/check-nickname", "/v1/api/users/generations").permitAll()
+                    .requestMatchers("/v1/api/users/check-nickname", "/v1/api/users/generations", "/v1/api/users/family-relationships", "/v1/api/users/memo-colors").permitAll()
                     .requestMatchers("/v1/api/users/profile", "/v1/api/users/password", "/v1/api/users/account").authenticated()
                     .requestMatchers("/v1/api/users/{userId}").hasRole("ADMIN")
                     .requestMatchers("/v1/api/family-sessions/**").authenticated()

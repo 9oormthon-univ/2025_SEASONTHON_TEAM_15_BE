@@ -4,7 +4,6 @@ import com.goormthon.team15.family.dto.*;
 import com.goormthon.team15.family.service.FamilySessionService;
 import com.goormthon.team15.user.entity.User;
 import com.goormthon.team15.user.repository.UserRepository;
-import com.goormthon.team15.family.entity.SessionMember;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -241,9 +240,6 @@ public class FamilySessionController {
     })
     @GetMapping("/my-session/dday")
     public ResponseEntity<DdayResponse> getDday(Authentication authentication) {
-        User user = userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
-        
         // 2026년 1월 1일을 목표 날짜로 설정
         LocalDate targetDate = LocalDate.of(2026, 1, 1);
         LocalDate today = LocalDate.now();

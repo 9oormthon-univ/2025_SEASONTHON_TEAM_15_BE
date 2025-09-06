@@ -139,4 +139,86 @@ public class UserController {
         }
         return ResponseEntity.ok(colors);
     }
+    
+    @Operation(
+        summary = "가족 관계 목록 조회",
+        description = "사용 가능한 가족 관계 목록을 조회합니다. 공개 API로 인증이 필요하지 않습니다."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "가족 관계 목록 조회 성공",
+            content = @Content(
+                mediaType = "application/json",
+                examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                    name = "성공 응답",
+                    value = "{\n  \"FATHER\": {\n    \"displayName\": \"아빠\",\n    \"description\": \"가족의 아버지\"\n  },\n  \"MOTHER\": {\n    \"displayName\": \"엄마\",\n    \"description\": \"가족의 어머니\"\n  }\n}"
+                )
+            ))
+    })
+    @GetMapping("/family-relationships")
+    public ResponseEntity<Map<String, Object>> getFamilyRelationships() {
+        Map<String, Object> relationships = new HashMap<>();
+        
+        // SessionMember.FamilyRelationship enum을 사용하기 위해 임시로 하드코딩
+        Map<String, String> father = new HashMap<>();
+        father.put("displayName", "아빠");
+        father.put("description", "가족의 아버지");
+        relationships.put("FATHER", father);
+        
+        Map<String, String> mother = new HashMap<>();
+        mother.put("displayName", "엄마");
+        mother.put("description", "가족의 어머니");
+        relationships.put("MOTHER", mother);
+        
+        Map<String, String> son = new HashMap<>();
+        son.put("displayName", "아들");
+        son.put("description", "가족의 아들");
+        relationships.put("SON", son);
+        
+        Map<String, String> daughter = new HashMap<>();
+        daughter.put("displayName", "딸");
+        daughter.put("description", "가족의 딸");
+        relationships.put("DAUGHTER", daughter);
+        
+        Map<String, String> brother = new HashMap<>();
+        brother.put("displayName", "형/오빠");
+        brother.put("description", "형제");
+        relationships.put("BROTHER", brother);
+        
+        Map<String, String> sister = new HashMap<>();
+        sister.put("displayName", "누나/언니");
+        sister.put("description", "자매");
+        relationships.put("SISTER", sister);
+        
+        Map<String, String> grandfather = new HashMap<>();
+        grandfather.put("displayName", "할아버지");
+        grandfather.put("description", "가족의 할아버지");
+        relationships.put("GRANDFATHER", grandfather);
+        
+        Map<String, String> grandmother = new HashMap<>();
+        grandmother.put("displayName", "할머니");
+        grandmother.put("description", "가족의 할머니");
+        relationships.put("GRANDMOTHER", grandmother);
+        
+        Map<String, String> uncle = new HashMap<>();
+        uncle.put("displayName", "삼촌");
+        uncle.put("description", "가족의 삼촌");
+        relationships.put("UNCLE", uncle);
+        
+        Map<String, String> aunt = new HashMap<>();
+        aunt.put("displayName", "이모/고모");
+        aunt.put("description", "가족의 이모/고모");
+        relationships.put("AUNT", aunt);
+        
+        Map<String, String> cousin = new HashMap<>();
+        cousin.put("displayName", "사촌");
+        cousin.put("description", "가족의 사촌");
+        relationships.put("COUSIN", cousin);
+        
+        Map<String, String> other = new HashMap<>();
+        other.put("displayName", "기타");
+        other.put("description", "기타 가족 관계");
+        relationships.put("OTHER", other);
+        
+        return ResponseEntity.ok(relationships);
+    }
 }

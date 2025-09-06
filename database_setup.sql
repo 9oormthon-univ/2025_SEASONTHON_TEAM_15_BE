@@ -31,6 +31,9 @@ CREATE TABLE IF NOT EXISTS users (
 -- 기존 테이블이 있다면 컬럼을 변경하는 마이그레이션 스크립트
 -- ALTER TABLE users CHANGE COLUMN email phone_number VARCHAR(20) NOT NULL UNIQUE;
 
+-- 기존 session_members 테이블에 family_relationship 컬럼 추가 (이미 있다면 무시)
+-- ALTER TABLE session_members ADD COLUMN IF NOT EXISTS family_relationship ENUM('FATHER', 'MOTHER', 'SON', 'DAUGHTER', 'BROTHER', 'SISTER', 'GRANDFATHER', 'GRANDMOTHER', 'UNCLE', 'AUNT', 'COUSIN', 'OTHER') AFTER status;
+
 -- 가족 세션 테이블
 CREATE TABLE IF NOT EXISTS family_sessions (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -53,6 +56,7 @@ CREATE TABLE IF NOT EXISTS session_members (
     user_id BIGINT NOT NULL,
     role ENUM('ADMIN', 'MEMBER') NOT NULL DEFAULT 'MEMBER',
     status ENUM('ACTIVE', 'INACTIVE', 'LEFT') NOT NULL DEFAULT 'ACTIVE',
+    family_relationship ENUM('FATHER', 'MOTHER', 'SON', 'DAUGHTER', 'BROTHER', 'SISTER', 'GRANDFATHER', 'GRANDMOTHER', 'UNCLE', 'AUNT', 'COUSIN', 'OTHER'),
     joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_active_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (family_session_id) REFERENCES family_sessions(id) ON DELETE CASCADE,

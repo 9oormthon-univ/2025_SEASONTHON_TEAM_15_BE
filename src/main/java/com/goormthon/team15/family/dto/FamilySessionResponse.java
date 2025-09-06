@@ -1,6 +1,5 @@
 package com.goormthon.team15.family.dto;
 
-import com.goormthon.team15.family.entity.FamilySession;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;

@@ -232,6 +232,7 @@ public class FamilySessionService {
                             memberUserInfo,
                             member.getRole().name(),
                             member.getStatus().name(),
+                            member.getFamilyRelationship() != null ? member.getFamilyRelationship().name() : null,
                             member.getJoinedAt()
                     );
                 })
@@ -273,6 +274,7 @@ public class FamilySessionService {
                             memberUserInfo,
                             member.getRole().name(),
                             member.getStatus().name(),
+                            member.getFamilyRelationship() != null ? member.getFamilyRelationship().name() : null,
                             member.getJoinedAt()
                     );
                 })
@@ -402,8 +404,8 @@ public class FamilySessionService {
         
         FamilySession familySession = sessionMember.getFamilySession();
         
-        // 해당 가족 세션의 모든 메모 조회 (신년 다짐으로 사용)
-        List<Memo> memos = memoRepository.findByFamilySessionAndDeletedFalseOrderByCreatedAtDesc(familySession);
+        // 해당 가족 세션의 모든 활성 메모 조회 (신년 다짐으로 사용)
+        List<Memo> memos = memoRepository.findByFamilySessionAndStatusOrderByCreatedAtDesc(familySession, Memo.MemoStatus.ACTIVE);
         
         return memos.stream()
                 .map(memo -> {
@@ -417,9 +419,9 @@ public class FamilySessionService {
                     
                     // 작성자 정보 생성
                     ResolutionResponse.WriterInfo writerInfo = new ResolutionResponse.WriterInfo(
-                            memo.getWriter().getId(),
-                            memo.getWriter().getUsername(),
-                            getFamilyRelationshipForUser(memo.getWriter(), familySession)
+                            memo.getUser().getId(),
+                            memo.getUser().getUsername(),
+                            getFamilyRelationshipForUser(memo.getUser(), familySession)
                     );
                     
                     return new ResolutionResponse(
