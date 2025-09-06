@@ -6,6 +6,7 @@ import com.goormthon.team15.user.dto.UserProfileResponse;
 import com.goormthon.team15.user.service.UserService;
 import com.goormthon.team15.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -72,8 +72,14 @@ public class UserController {
     @PutMapping("/profile")
     public ResponseEntity<UpdateUserResponse> updateUserProfile(
             Authentication authentication,
-            @Valid @RequestBody UpdateUserRequest request) {
+            @Parameter(description = "이메일 주소 (선택사항)", example = "newemail@example.com")
+            @RequestParam(value = "email", required = false) String email,
+            @Parameter(description = "비밀번호 (선택사항)", example = "newpassword123")
+            @RequestParam(value = "password", required = false) String password,
+            @Parameter(description = "세대 (선택사항)", example = "THIRTIES")
+            @RequestParam(value = "generation", required = false) String generation) {
         String username = authentication.getName();
+        UpdateUserRequest request = new UpdateUserRequest(email, password, generation);
         UpdateUserResponse response = userService.updateUser(username, request);
         return ResponseEntity.ok(response);
     }
