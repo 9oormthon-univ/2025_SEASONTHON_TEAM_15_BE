@@ -21,6 +21,9 @@ public class UserProfileResponse {
     @Schema(description = "역할", example = "USER")
     private String role;
     
+    @Schema(description = "메모지 색깔", example = "YELLOW")
+    private String memoColor;
+    
     @Schema(description = "생성일시", example = "2025-01-01T00:00:00")
     private String createdAt;
     
@@ -30,12 +33,13 @@ public class UserProfileResponse {
     public UserProfileResponse() {}
     
     public UserProfileResponse(Long id, String username, String phoneNumber, 
-                              String generation, String role, String createdAt, String updatedAt) {
+                              String generation, String role, String memoColor, String createdAt, String updatedAt) {
         this.id = id;
         this.username = username;
         this.phoneNumber = phoneNumber;
         this.generation = generation;
         this.role = role;
+        this.memoColor = memoColor;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -80,6 +84,14 @@ public class UserProfileResponse {
     
     public void setRole(String role) {
         this.role = role;
+    }
+    
+    public String getMemoColor() {
+        return memoColor;
+    }
+    
+    public void setMemoColor(String memoColor) {
+        this.memoColor = memoColor;
     }
     
     public String getCreatedAt() {

@@ -30,6 +30,7 @@ public class UserService {
             user.getPhoneNumber(),
             user.getGeneration() != null ? user.getGeneration().name() : null,
             user.getRole().name(),
+            user.getMemoColor().name(),
             user.getCreatedAt() != null ? user.getCreatedAt().toString() : null,
             user.getUpdatedAt() != null ? user.getUpdatedAt().toString() : null
         );
@@ -62,6 +63,16 @@ public class UserService {
             }
         }
         
+        // 메모지 색깔 업데이트
+        if (request.getMemoColor() != null && !request.getMemoColor().isEmpty()) {
+            try {
+                User.MemoColor memoColor = User.MemoColor.valueOf(request.getMemoColor().toUpperCase());
+                user.setMemoColor(memoColor);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("올바르지 않은 메모지 색깔 값입니다");
+            }
+        }
+        
         User updatedUser = userRepository.save(user);
         
         UserProfileResponse userProfile = new UserProfileResponse(
@@ -70,6 +81,7 @@ public class UserService {
             updatedUser.getPhoneNumber(),
             updatedUser.getGeneration() != null ? updatedUser.getGeneration().name() : null,
             updatedUser.getRole().name(),
+            updatedUser.getMemoColor().name(),
             updatedUser.getCreatedAt() != null ? updatedUser.getCreatedAt().toString() : null,
             updatedUser.getUpdatedAt() != null ? updatedUser.getUpdatedAt().toString() : null
         );

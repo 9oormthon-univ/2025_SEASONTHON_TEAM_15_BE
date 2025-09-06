@@ -21,8 +21,10 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) NOT NULL UNIQUE,
     phone_number VARCHAR(20) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
+    nickname VARCHAR(50),
     generation ENUM('TEENS', 'TWENTIES', 'THIRTIES', 'FORTIES_PLUS'),
     role ENUM('USER', 'ADMIN') NOT NULL DEFAULT 'USER',
+    memo_color ENUM('YELLOW', 'PINK', 'BLUE', 'GREEN', 'ORANGE', 'PURPLE', 'RED', 'LIGHT_BLUE') DEFAULT 'YELLOW',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -60,14 +62,20 @@ CREATE TABLE IF NOT EXISTS session_members (
     UNIQUE KEY unique_session_user (family_session_id, user_id)
 );
 
--- 메모 테이블
+-- 메모 테이블 (업데이트된 구조)
 CREATE TABLE IF NOT EXISTS memos (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(200) NOT NULL,
     content TEXT,
     user_id BIGINT NOT NULL,
+    family_session_id BIGINT NOT NULL,
+    target_user_id BIGINT NOT NULL,
+    is_anonymous BOOLEAN DEFAULT FALSE,
+    memo_color ENUM('LIGHT_PINK', 'PEACH', 'LIGHT_YELLOW', 'LIGHT_GREEN', 'LIGHT_BLUE_GREEN', 'TEAL', 'LIGHT_BLUE', 'LAVENDER', 'PURPLE') DEFAULT 'LIGHT_PINK',
     status ENUM('ACTIVE', 'DELETED') NOT NULL DEFAULT 'ACTIVE',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (family_session_id) REFERENCES family_sessions(id) ON DELETE CASCADE,
+    FOREIGN KEY (target_user_id) REFERENCES users(id) ON DELETE CASCADE
 );

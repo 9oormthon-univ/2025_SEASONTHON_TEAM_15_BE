@@ -35,6 +35,9 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
     
+    @Size(max = 50)
+    @Column(name = "nickname")
+    private String nickname;
     
     @Enumerated(EnumType.STRING)
     @Column(name = "generation")
@@ -43,6 +46,10 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role = Role.USER;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "memo_color", nullable = false)
+    private MemoColor memoColor = MemoColor.YELLOW;
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -122,6 +129,13 @@ public class User implements UserDetails {
         this.password = password;
     }
     
+    public String getNickname() {
+        return nickname;
+    }
+    
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
     
     public Generation getGeneration() {
         return generation;
@@ -137,6 +151,14 @@ public class User implements UserDetails {
     
     public void setRole(Role role) {
         this.role = role;
+    }
+    
+    public MemoColor getMemoColor() {
+        return memoColor;
+    }
+    
+    public void setMemoColor(MemoColor memoColor) {
+        this.memoColor = memoColor;
     }
     
     public LocalDateTime getCreatedAt() {
@@ -179,6 +201,33 @@ public class User implements UserDetails {
         
         public String getColorCode() {
             return colorCode;
+        }
+    }
+    
+    public enum MemoColor {
+        YELLOW("노란색", "#FFD700"),
+        PINK("분홍색", "#FFB6C1"),
+        BLUE("파란색", "#87CEEB"),
+        GREEN("초록색", "#98FB98"),
+        ORANGE("주황색", "#FFA500"),
+        PURPLE("보라색", "#DDA0DD"),
+        RED("빨간색", "#FFB6C1"),
+        LIGHT_BLUE("하늘색", "#E0F6FF");
+        
+        private final String displayName;
+        private final String hexCode;
+        
+        MemoColor(String displayName, String hexCode) {
+            this.displayName = displayName;
+            this.hexCode = hexCode;
+        }
+        
+        public String getDisplayName() {
+            return displayName;
+        }
+        
+        public String getHexCode() {
+            return hexCode;
         }
     }
 }

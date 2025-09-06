@@ -68,7 +68,8 @@ public class AuthService {
             savedUser.getUsername(),
             savedUser.getPhoneNumber(),
             savedUser.getGeneration() != null ? savedUser.getGeneration().name() : null,
-            savedUser.getRole().name()
+            savedUser.getRole().name(),
+            savedUser.getMemoColor().name()
         );
     }
     
@@ -89,7 +90,8 @@ public class AuthService {
             user.getUsername(),
             user.getPhoneNumber(),
             user.getGeneration() != null ? user.getGeneration().name() : null,
-            user.getRole().name()
+            user.getRole().name(),
+            user.getMemoColor().name()
         );
     }
     

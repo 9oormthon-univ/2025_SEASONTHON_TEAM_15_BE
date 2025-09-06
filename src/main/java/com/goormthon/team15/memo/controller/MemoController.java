@@ -51,12 +51,26 @@ public class MemoController {
             @RequestParam("title") String title,
             @Parameter(description = "메모 내용", example = "1. 운동하기\n2. 책 읽기")
             @RequestParam(value = "content", required = false) String content,
+            @Parameter(description = "가족 세션 ID", required = true, example = "1")
+            @RequestParam("familySessionId") Long familySessionId,
+            @Parameter(description = "다짐 대상자 ID", required = true, example = "2")
+            @RequestParam("targetUserId") Long targetUserId,
+            @Parameter(description = "익명 여부", example = "false")
+            @RequestParam(value = "isAnonymous", required = false, defaultValue = "false") Boolean isAnonymous,
+            @Parameter(description = "메모 색상", example = "LIGHT_PINK")
+            @RequestParam(value = "memoColor", required = false) String memoColor,
             Authentication authentication) {
         
         User user = userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
         
-        CreateMemoRequest request = new CreateMemoRequest(title, content);
+        CreateMemoRequest request = new CreateMemoRequest();
+        request.setTitle(title);
+        request.setContent(content);
+        request.setFamilySessionId(familySessionId);
+        request.setTargetUserId(targetUserId);
+        request.setIsAnonymous(isAnonymous);
+        request.setMemoColor(memoColor);
         MemoResponse response = memoService.createMemo(request, user);
         return ResponseEntity.ok(response);
     }
@@ -108,6 +122,33 @@ public class MemoController {
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
         
         List<MemoResponse> response = memoService.getAllUserMemos(user);
+        return ResponseEntity.ok(response);
+    }
+    
+    @Operation(
+        summary = "가족 세션별 메모 조회",
+        description = "특정 가족 세션의 모든 메모를 조회합니다.",
+        security = @SecurityRequirement(name = "Bearer Authentication")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "메모 목록 조회 성공",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = MemoResponse.class)
+            )),
+        @ApiResponse(responseCode = "401", description = "인증 실패"),
+        @ApiResponse(responseCode = "403", description = "세션 접근 권한 없음")
+    })
+    @GetMapping("/family-session/{familySessionId}")
+    public ResponseEntity<List<MemoResponse>> getFamilySessionMemos(
+            @Parameter(description = "가족 세션 ID", required = true, example = "1")
+            @PathVariable Long familySessionId,
+            Authentication authentication) {
+        
+        User user = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
+        
+        List<MemoResponse> response = memoService.getFamilySessionMemos(familySessionId, user);
         return ResponseEntity.ok(response);
     }
     
@@ -238,4 +279,6 @@ public class MemoController {
         long count = memoService.getUserMemoCount(user);
         return ResponseEntity.ok(count);
     }
+    
+    
 }

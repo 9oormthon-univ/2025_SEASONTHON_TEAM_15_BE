@@ -3,6 +3,8 @@ package com.goormthon.team15.memo.service;
 import com.goormthon.team15.memo.dto.*;
 import com.goormthon.team15.memo.entity.Memo;
 import com.goormthon.team15.memo.repository.MemoRepository;
+import com.goormthon.team15.family.entity.FamilySession;
+import com.goormthon.team15.family.repository.FamilySessionRepository;
 import com.goormthon.team15.user.entity.User;
 import com.goormthon.team15.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +27,35 @@ public class MemoService {
     @Autowired
     private UserRepository userRepository;
     
+    @Autowired
+    private FamilySessionRepository familySessionRepository;
+    
     /**
      * 메모 생성
      */
     public MemoResponse createMemo(CreateMemoRequest request, User user) {
-        Memo memo = new Memo(request.getTitle(), request.getContent(), user);
+        // 가족 세션 조회
+        FamilySession familySession = familySessionRepository.findById(request.getFamilySessionId())
+                .orElseThrow(() -> new IllegalArgumentException("가족 세션을 찾을 수 없습니다"));
+        
+        // 대상 사용자 조회
+        User targetUser = userRepository.findById(request.getTargetUserId())
+                .orElseThrow(() -> new IllegalArgumentException("대상 사용자를 찾을 수 없습니다"));
+        
+        // 메모 색상 설정
+        Memo.MemoColor memoColor = Memo.MemoColor.LIGHT_PINK; // 기본값
+        if (request.getMemoColor() != null) {
+            try {
+                memoColor = Memo.MemoColor.valueOf(request.getMemoColor());
+            } catch (IllegalArgumentException e) {
+                // 잘못된 색상이면 기본값 사용
+            }
+        }
+        
+        Memo memo = new Memo(request.getTitle(), request.getContent(), user, familySession, targetUser);
+        memo.setIsAnonymous(request.getIsAnonymous());
+        memo.setMemoColor(memoColor);
+        
         Memo savedMemo = memoRepository.save(memo);
         return convertToResponse(savedMemo);
     }
@@ -97,6 +123,7 @@ public class MemoService {
             memo.setContent(request.getContent());
         }
         
+        
         Memo updatedMemo = memoRepository.save(memo);
         return convertToResponse(updatedMemo);
     }
@@ -149,6 +176,35 @@ public class MemoService {
     }
     
     /**
+     * 가족 세션별 메모 조회
+     */
+    @Transactional(readOnly = true)
+    public List<MemoResponse> getFamilySessionMemos(Long familySessionId, User user) {
+        // 가족 세션 조회 및 권한 확인
+        FamilySession familySession = familySessionRepository.findById(familySessionId)
+                .orElseThrow(() -> new IllegalArgumentException("가족 세션을 찾을 수 없습니다"));
+        
+        // 사용자가 해당 가족 세션의 멤버인지 확인
+        if (!familySession.hasMember(user) && !familySession.isCreator(user)) {
+            throw new IllegalArgumentException("해당 가족 세션에 접근할 권한이 없습니다");
+        }
+        
+        // 가족 세션의 모든 메모 조회 (사용자가 볼 수 있는 메모만)
+        List<Memo> memos = memoRepository.findByFamilySessionAndStatusOrderByCreatedAtDesc(
+                familySession, Memo.MemoStatus.ACTIVE);
+        
+        // 익명 메모 필터링 (작성자나 대상자만 볼 수 있음)
+        List<Memo> visibleMemos = memos.stream()
+                .filter(memo -> memo.canView(user))
+                .collect(Collectors.toList());
+        
+        return visibleMemos.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+    
+    
+    /**
      * Memo 엔티티를 Response DTO로 변환
      */
     private MemoResponse convertToResponse(Memo memo) {
@@ -160,14 +216,26 @@ public class MemoService {
                         memo.getUser().getGeneration().name() : null
         );
         
+        MemoResponse.UserInfo targetUserInfo = new MemoResponse.UserInfo(
+                memo.getTargetUser().getId(),
+                memo.getTargetUser().getUsername(),
+                memo.getTargetUser().getPhoneNumber(),
+                memo.getTargetUser().getGeneration() != null ? 
+                        memo.getTargetUser().getGeneration().name() : null
+        );
+        
         return new MemoResponse(
                 memo.getId(),
                 memo.getTitle(),
                 memo.getContent(),
                 userInfo,
+                targetUserInfo,
+                memo.getIsAnonymous(),
                 memo.getStatus().name(),
+                memo.getMemoColor().name(),
                 memo.getCreatedAt(),
                 memo.getUpdatedAt()
         );
     }
+    
 }

@@ -1,5 +1,6 @@
 package com.goormthon.team15.memo.entity;
 
+import com.goormthon.team15.family.entity.FamilySession;
 import com.goormthon.team15.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -28,6 +29,21 @@ public class Memo {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "family_session_id", nullable = false)
+    private FamilySession familySession;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "target_user_id", nullable = false)
+    private User targetUser;
+    
+    @Column(name = "is_anonymous")
+    private Boolean isAnonymous = false;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "memo_color")
+    private MemoColor memoColor = MemoColor.LIGHT_PINK;
+    
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MemoStatus status = MemoStatus.ACTIVE;
@@ -52,10 +68,12 @@ public class Memo {
     // 생성자
     public Memo() {}
     
-    public Memo(String title, String content, User user) {
+    public Memo(String title, String content, User user, FamilySession familySession, User targetUser) {
         this.title = title;
         this.content = content;
         this.user = user;
+        this.familySession = familySession;
+        this.targetUser = targetUser;
     }
     
     // Getters and Setters
@@ -91,6 +109,38 @@ public class Memo {
         this.user = user;
     }
     
+    public FamilySession getFamilySession() {
+        return familySession;
+    }
+    
+    public void setFamilySession(FamilySession familySession) {
+        this.familySession = familySession;
+    }
+    
+    public User getTargetUser() {
+        return targetUser;
+    }
+    
+    public void setTargetUser(User targetUser) {
+        this.targetUser = targetUser;
+    }
+    
+    public Boolean getIsAnonymous() {
+        return isAnonymous;
+    }
+    
+    public void setIsAnonymous(Boolean isAnonymous) {
+        this.isAnonymous = isAnonymous;
+    }
+    
+    public MemoColor getMemoColor() {
+        return memoColor;
+    }
+    
+    public void setMemoColor(MemoColor memoColor) {
+        this.memoColor = memoColor;
+    }
+    
     public MemoStatus getStatus() {
         return status;
     }
@@ -124,6 +174,14 @@ public class Memo {
         return this.user.getId().equals(user.getId());
     }
     
+    public boolean isTarget(User user) {
+        return this.targetUser.getId().equals(user.getId());
+    }
+    
+    public boolean canView(User user) {
+        return isOwner(user) || isTarget(user) || !isAnonymous;
+    }
+    
     public enum MemoStatus {
         ACTIVE("활성"),
         DELETED("삭제됨");
@@ -138,4 +196,27 @@ public class Memo {
             return displayName;
         }
     }
+    
+    public enum MemoColor {
+        LIGHT_PINK("#FFB6C1"),
+        PEACH("#FFCCCB"),
+        LIGHT_YELLOW("#FFFFE0"),
+        LIGHT_GREEN("#90EE90"),
+        LIGHT_BLUE_GREEN("#AFEEEE"),
+        TEAL("#20B2AA"),
+        LIGHT_BLUE("#ADD8E6"),
+        LAVENDER("#E6E6FA"),
+        PURPLE("#DDA0DD");
+        
+        private final String hexCode;
+        
+        MemoColor(String hexCode) {
+            this.hexCode = hexCode;
+        }
+        
+        public String getHexCode() {
+            return hexCode;
+        }
+    }
+    
 }

@@ -77,9 +77,11 @@ public class UserController {
             @Parameter(description = "비밀번호 (선택사항)", example = "newpassword123")
             @RequestParam(value = "password", required = false) String password,
             @Parameter(description = "세대 (선택사항)", example = "THIRTIES")
-            @RequestParam(value = "generation", required = false) String generation) {
+            @RequestParam(value = "generation", required = false) String generation,
+            @Parameter(description = "메모지 색깔 (선택사항)", example = "PINK")
+            @RequestParam(value = "memoColor", required = false) String memoColor) {
         String username = authentication.getName();
-        UpdateUserRequest request = new UpdateUserRequest(phoneNumber, password, generation);
+        UpdateUserRequest request = new UpdateUserRequest(phoneNumber, password, generation, memoColor);
         UpdateUserResponse response = userService.updateUser(username, request);
         return ResponseEntity.ok(response);
     }
@@ -110,5 +112,31 @@ public class UserController {
         
         response.put("generations", generations);
         return ResponseEntity.ok(response);
+    }
+    
+    @Operation(
+        summary = "사용 가능한 메모지 색깔 목록 조회",
+        description = "메모지에 사용할 수 있는 색깔 목록을 조회합니다. 공개 API로 인증이 필요하지 않습니다."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "색깔 목록 조회 성공",
+            content = @Content(
+                mediaType = "application/json",
+                examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                    name = "성공 응답",
+                    value = "{\n  \"YELLOW\": {\n    \"displayName\": \"노란색\",\n    \"hexCode\": \"#FFD700\"\n  },\n  \"PINK\": {\n    \"displayName\": \"분홍색\",\n    \"hexCode\": \"#FFB6C1\"\n  }\n}"
+                )
+            ))
+    })
+    @GetMapping("/memo-colors")
+    public ResponseEntity<Map<String, Object>> getMemoColors() {
+        Map<String, Object> colors = new HashMap<>();
+        for (User.MemoColor color : User.MemoColor.values()) {
+            Map<String, String> colorInfo = new HashMap<>();
+            colorInfo.put("displayName", color.getDisplayName());
+            colorInfo.put("hexCode", color.getHexCode());
+            colors.put(color.name(), colorInfo);
+        }
+        return ResponseEntity.ok(colors);
     }
 }

@@ -18,12 +18,22 @@ public class UpdateUserRequest {
     @Schema(description = "세대", example = "THIRTIES", allowableValues = {"TEENS", "TWENTIES", "THIRTIES", "FORTIES_PLUS"})
     private String generation;
     
+    @Schema(description = "메모지 색깔", example = "PINK", allowableValues = {"YELLOW", "PINK", "BLUE", "GREEN", "ORANGE", "PURPLE", "RED", "LIGHT_BLUE"})
+    private String memoColor;
+    
     public UpdateUserRequest() {}
     
     public UpdateUserRequest(String phoneNumber, String password, String generation) {
         this.phoneNumber = phoneNumber;
         this.password = password;
         this.generation = generation;
+    }
+    
+    public UpdateUserRequest(String phoneNumber, String password, String generation, String memoColor) {
+        this.phoneNumber = phoneNumber;
+        this.password = password;
+        this.generation = generation;
+        this.memoColor = memoColor;
     }
     
     // Getters and Setters
@@ -49,5 +59,13 @@ public class UpdateUserRequest {
     
     public void setGeneration(String generation) {
         this.generation = generation;
+    }
+    
+    public String getMemoColor() {
+        return memoColor;
+    }
+    
+    public void setMemoColor(String memoColor) {
+        this.memoColor = memoColor;
     }
 }
