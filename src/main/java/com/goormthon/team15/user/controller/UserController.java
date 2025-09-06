@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/v1/api/users")
 @CrossOrigin(origins = "*")
 @Tag(name = "사용자", description = "사용자 관련 API")
 public class UserController {
@@ -71,15 +71,15 @@ public class UserController {
     })
     @PutMapping("/profile")
     public ResponseEntity<UpdateUserResponse> updateUserProfile(
-            Authentication authentication,
-            @Parameter(description = "이메일 주소 (선택사항)", example = "newemail@example.com")
-            @RequestParam(value = "email", required = false) String email,
+            Authentication authentication,  
+            @Parameter(description = "전화번호 (선택사항)", example = "010-9876-5432")
+            @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
             @Parameter(description = "비밀번호 (선택사항)", example = "newpassword123")
             @RequestParam(value = "password", required = false) String password,
             @Parameter(description = "세대 (선택사항)", example = "THIRTIES")
             @RequestParam(value = "generation", required = false) String generation) {
         String username = authentication.getName();
-        UpdateUserRequest request = new UpdateUserRequest(email, password, generation);
+        UpdateUserRequest request = new UpdateUserRequest(phoneNumber, password, generation);
         UpdateUserResponse response = userService.updateUser(username, request);
         return ResponseEntity.ok(response);
     }

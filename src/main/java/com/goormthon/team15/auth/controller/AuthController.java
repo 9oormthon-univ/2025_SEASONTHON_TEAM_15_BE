@@ -18,7 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/v1/api/auth")
 @CrossOrigin(origins = "*")
 @Tag(name = "인증", description = "사용자 인증 관련 API")
 public class AuthController {
@@ -45,13 +45,13 @@ public class AuthController {
     public ResponseEntity<AuthResponse> register(
             @Parameter(description = "사용자명", required = true, example = "testuser")
             @RequestParam("username") String username,
-            @Parameter(description = "이메일 주소", required = true, example = "test@example.com")
-            @RequestParam("email") String email,
+            @Parameter(description = "전화번호", required = true, example = "010-1234-5678")
+            @RequestParam("phoneNumber") String phoneNumber,
             @Parameter(description = "비밀번호", required = true, example = "password123")
             @RequestParam("password") String password,
             @Parameter(description = "세대 (선택사항)", example = "TWENTIES")
             @RequestParam(value = "generation", required = false) String generation) {
-        RegisterRequest request = new RegisterRequest(username, email, password, generation);
+        RegisterRequest request = new RegisterRequest(username, phoneNumber, password, generation);
         AuthResponse response = authService.register(request);
         return ResponseEntity.ok(response);
     }

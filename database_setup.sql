@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS family_sessions (
     name VARCHAR(100) NOT NULL,
     description VARCHAR(500),
     invite_code VARCHAR(20) NOT NULL UNIQUE,
+    session_password VARCHAR(20),
     creator_id BIGINT NOT NULL,
     status ENUM('ACTIVE', 'INACTIVE', 'COMPLETED') NOT NULL DEFAULT 'ACTIVE',
     max_members INT DEFAULT 10,
