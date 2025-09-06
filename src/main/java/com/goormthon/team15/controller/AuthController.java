@@ -5,6 +5,7 @@ import com.goormthon.team15.dto.LoginRequest;
 import com.goormthon.team15.dto.RegisterRequest;
 import com.goormthon.team15.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -51,6 +52,52 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
         try {
+            AuthResponse response = authService.login(loginRequest);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    
+    @Operation(summary = "회원가입 (쿼리 파라미터)", description = "쿼리 파라미터로 회원가입을 수행합니다")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "회원가입 성공",
+                    content = @Content(schema = @Schema(implementation = AuthResponse.class))),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청",
+                    content = @Content(schema = @Schema(implementation = String.class)))
+    })
+    @PostMapping("/register-param")
+    public ResponseEntity<?> registerWithParams(
+            @Parameter(description = "사용자명", example = "testuser", required = true)
+            @RequestParam String username,
+            @Parameter(description = "이메일 주소", example = "test@example.com", required = true)
+            @RequestParam String email,
+            @Parameter(description = "비밀번호", example = "password123", required = true)
+            @RequestParam String password) {
+        try {
+            RegisterRequest registerRequest = new RegisterRequest(username, email, password);
+            AuthResponse response = authService.register(registerRequest);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    
+    @Operation(summary = "로그인 (쿼리 파라미터)", description = "쿼리 파라미터로 로그인을 수행합니다")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "로그인 성공",
+                    content = @Content(schema = @Schema(implementation = AuthResponse.class))),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청",
+                    content = @Content(schema = @Schema(implementation = String.class)))
+    })
+    @PostMapping("/login-param")
+    public ResponseEntity<?> loginWithParams(
+            @Parameter(description = "사용자명", example = "testuser", required = true)
+            @RequestParam String username,
+            @Parameter(description = "비밀번호", example = "password123", required = true)
+            @RequestParam String password) {
+        try {
+            LoginRequest loginRequest = new LoginRequest(username, password);
             AuthResponse response = authService.login(loginRequest);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
