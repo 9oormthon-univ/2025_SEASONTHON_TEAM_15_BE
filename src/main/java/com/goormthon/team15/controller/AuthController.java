@@ -1,6 +1,7 @@
 package com.goormthon.team15.controller;
 
 import com.goormthon.team15.dto.AuthResponse;
+import com.goormthon.team15.dto.ErrorResponse;
 import com.goormthon.team15.dto.LoginRequest;
 import com.goormthon.team15.dto.RegisterRequest;
 import com.goormthon.team15.service.AuthService;
@@ -29,45 +30,41 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "회원가입 성공",
                     content = @Content(schema = @Schema(implementation = AuthResponse.class))),
             @ApiResponse(responseCode = "400", description = "잘못된 요청",
-                    content = @Content(schema = @Schema(implementation = String.class)))
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "409", description = "사용자 이미 존재",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/register")
-    public ResponseEntity<?> register(
+    public ResponseEntity<AuthResponse> register(
             @Parameter(description = "사용자명", example = "testuser", required = true)
             @RequestParam String username,
             @Parameter(description = "이메일 주소", example = "test@example.com", required = true)
             @RequestParam String email,
             @Parameter(description = "비밀번호", example = "password123", required = true)
             @RequestParam String password) {
-        try {
-            RegisterRequest registerRequest = new RegisterRequest(username, email, password);
-            AuthResponse response = authService.register(registerRequest);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        RegisterRequest registerRequest = new RegisterRequest(username, email, password);
+        AuthResponse response = authService.register(registerRequest);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "로그인", description = "사용자 인증을 수행합니다")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "로그인 성공",
                     content = @Content(schema = @Schema(implementation = AuthResponse.class))),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청",
-                    content = @Content(schema = @Schema(implementation = String.class)))
+            @ApiResponse(responseCode = "401", description = "인증 실패",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "404", description = "사용자 없음",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/login")
-    public ResponseEntity<?> login(
+    public ResponseEntity<AuthResponse> login(
             @Parameter(description = "사용자명", example = "testuser", required = true)
             @RequestParam String username,
             @Parameter(description = "비밀번호", example = "password123", required = true)
             @RequestParam String password) {
-        try {
-            LoginRequest loginRequest = new LoginRequest(username, password);
-            AuthResponse response = authService.login(loginRequest);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        LoginRequest loginRequest = new LoginRequest(username, password);
+        AuthResponse response = authService.login(loginRequest);
+        return ResponseEntity.ok(response);
     }
     
     @Operation(summary = "인증 테스트", description = "인증이 필요한 엔드포인트 테스트")
