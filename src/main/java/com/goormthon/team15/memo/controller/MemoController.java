@@ -234,33 +234,6 @@ public class MemoController {
         return ResponseEntity.ok("메모가 삭제되었습니다");
     }
     
-    @Operation(
-        summary = "메모 검색",
-        description = "메모를 검색합니다. 제목, 내용, 또는 전체에서 검색할 수 있습니다.",
-        security = @SecurityRequirement(name = "Bearer Authentication")
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "메모 검색 성공",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = MemoResponse.class)
-            )),
-        @ApiResponse(responseCode = "401", description = "인증 실패")
-    })
-    @GetMapping("/search")
-    public ResponseEntity<List<MemoResponse>> searchMemos(
-            @Parameter(description = "검색 키워드", required = true, example = "운동")
-            @RequestParam("keyword") String keyword,
-            @Parameter(description = "검색 타입 (title, content, all)", example = "all")
-            @RequestParam(value = "type", required = false, defaultValue = "all") String searchType,
-            Authentication authentication) {
-        
-        User user = userRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
-        
-        List<MemoResponse> response = memoService.searchMemos(user, keyword, searchType);
-        return ResponseEntity.ok(response);
-    }
     
     @Operation(
         summary = "메모 수 조회",

@@ -139,33 +139,6 @@ public class MemoService {
         memoRepository.save(memo);
     }
     
-    /**
-     * 메모 검색
-     */
-    @Transactional(readOnly = true)
-    public List<MemoResponse> searchMemos(User user, String keyword, String searchType) {
-        List<Memo> memos;
-        
-        switch (searchType.toLowerCase()) {
-            case "title":
-                memos = memoRepository.findByUserAndStatusAndTitleContaining(
-                        user, Memo.MemoStatus.ACTIVE, keyword);
-                break;
-            case "content":
-                memos = memoRepository.findByUserAndStatusAndContentContaining(
-                        user, Memo.MemoStatus.ACTIVE, keyword);
-                break;
-            case "all":
-            default:
-                memos = memoRepository.findByUserAndStatusAndTitleOrContentContaining(
-                        user, Memo.MemoStatus.ACTIVE, keyword);
-                break;
-        }
-        
-        return memos.stream()
-                .map(this::convertToResponse)
-                .collect(Collectors.toList());
-    }
     
     /**
      * 사용자의 메모 수 조회

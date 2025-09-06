@@ -6,8 +6,6 @@ import com.goormthon.team15.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -36,23 +34,6 @@ public interface MemoRepository extends JpaRepository<Memo, Long> {
      */
     long countByUserAndStatus(User user, Memo.MemoStatus status);
     
-    /**
-     * 제목으로 메모 검색
-     */
-    @Query("SELECT m FROM Memo m WHERE m.user = :user AND m.status = :status AND m.title LIKE %:keyword% ORDER BY m.createdAt DESC")
-    List<Memo> findByUserAndStatusAndTitleContaining(@Param("user") User user, @Param("status") Memo.MemoStatus status, @Param("keyword") String keyword);
-    
-    /**
-     * 내용으로 메모 검색
-     */
-    @Query("SELECT m FROM Memo m WHERE m.user = :user AND m.status = :status AND m.content LIKE %:keyword% ORDER BY m.createdAt DESC")
-    List<Memo> findByUserAndStatusAndContentContaining(@Param("user") User user, @Param("status") Memo.MemoStatus status, @Param("keyword") String keyword);
-    
-    /**
-     * 제목 또는 내용으로 메모 검색
-     */
-    @Query("SELECT m FROM Memo m WHERE m.user = :user AND m.status = :status AND (m.title LIKE %:keyword% OR m.content LIKE %:keyword%) ORDER BY m.createdAt DESC")
-    List<Memo> findByUserAndStatusAndTitleOrContentContaining(@Param("user") User user, @Param("status") Memo.MemoStatus status, @Param("keyword") String keyword);
     
     /**
      * 사용자가 특정 메모의 소유자인지 확인
