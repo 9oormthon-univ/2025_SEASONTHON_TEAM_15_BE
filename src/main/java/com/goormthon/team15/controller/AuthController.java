@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,41 +32,7 @@ public class AuthController {
                     content = @Content(schema = @Schema(implementation = String.class)))
     })
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest registerRequest) {
-        try {
-            AuthResponse response = authService.register(registerRequest);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-    
-    @Operation(summary = "로그인", description = "사용자 인증을 수행합니다")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "로그인 성공",
-                    content = @Content(schema = @Schema(implementation = AuthResponse.class))),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청",
-                    content = @Content(schema = @Schema(implementation = String.class)))
-    })
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
-        try {
-            AuthResponse response = authService.login(loginRequest);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-    
-    @Operation(summary = "회원가입 (쿼리 파라미터)", description = "쿼리 파라미터로 회원가입을 수행합니다")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "회원가입 성공",
-                    content = @Content(schema = @Schema(implementation = AuthResponse.class))),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청",
-                    content = @Content(schema = @Schema(implementation = String.class)))
-    })
-    @PostMapping("/register-param")
-    public ResponseEntity<?> registerWithParams(
+    public ResponseEntity<?> register(
             @Parameter(description = "사용자명", example = "testuser", required = true)
             @RequestParam String username,
             @Parameter(description = "이메일 주소", example = "test@example.com", required = true)
@@ -82,16 +47,16 @@ public class AuthController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    
-    @Operation(summary = "로그인 (쿼리 파라미터)", description = "쿼리 파라미터로 로그인을 수행합니다")
+
+    @Operation(summary = "로그인", description = "사용자 인증을 수행합니다")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "로그인 성공",
                     content = @Content(schema = @Schema(implementation = AuthResponse.class))),
             @ApiResponse(responseCode = "400", description = "잘못된 요청",
                     content = @Content(schema = @Schema(implementation = String.class)))
     })
-    @PostMapping("/login-param")
-    public ResponseEntity<?> loginWithParams(
+    @PostMapping("/login")
+    public ResponseEntity<?> login(
             @Parameter(description = "사용자명", example = "testuser", required = true)
             @RequestParam String username,
             @Parameter(description = "비밀번호", example = "password123", required = true)

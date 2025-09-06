@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 
 @Schema(description = "로그인 요청")
-public class LoginRequest {
+public class    LoginRequest {
     
     @Schema(description = "사용자명", example = "testuser", required = true)
     @NotBlank(message = "사용자명은 필수입니다")
