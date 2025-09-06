@@ -1,11 +1,23 @@
 package com.goormthon.team15.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "인증 응답")
 public class AuthResponse {
     
+    @Schema(description = "JWT 토큰", example = "eyJhbGciOiJIUzI1NiJ9...")
     private String token;
+    
+    @Schema(description = "토큰 타입", example = "Bearer")
     private String type = "Bearer";
+    
+    @Schema(description = "사용자명", example = "testuser")
     private String username;
+    
+    @Schema(description = "이메일", example = "test@example.com")
     private String email;
+    
+    @Schema(description = "사용자 역할", example = "USER")
     private String role;
     
     public AuthResponse() {}
