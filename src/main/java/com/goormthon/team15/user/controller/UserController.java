@@ -128,32 +128,32 @@ public class UserController {
                 )
             ))
     })
-    @GetMapping("/memo-colors")
-    public ResponseEntity<Map<String, Object>> getMemoColors() {
-        Map<String, Object> colors = new HashMap<>();
-        for (User.MemoColor color : User.MemoColor.values()) {
-            Map<String, String> colorInfo = new HashMap<>();
-            colorInfo.put("displayName", color.getDisplayName());
-            colorInfo.put("hexCode", color.getHexCode());
-            colors.put(color.name(), colorInfo);
-        }
-        return ResponseEntity.ok(colors);
-    }
-    
-    @Operation(
-        summary = "가족 관계 목록 조회",
-        description = "사용 가능한 가족 관계 목록을 조회합니다. 공개 API로 인증이 필요하지 않습니다."
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "가족 관계 목록 조회 성공",
-            content = @Content(
-                mediaType = "application/json",
-                examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
-                    name = "성공 응답",
-                    value = "{\n  \"FATHER\": {\n    \"displayName\": \"아빠\",\n    \"description\": \"가족의 아버지\"\n  },\n  \"MOTHER\": {\n    \"displayName\": \"엄마\",\n    \"description\": \"가족의 어머니\"\n  }\n}"
-                )
-            ))
-    })
+////    @GetMapping("/memo-colors")
+////    public ResponseEntity<Map<String, Object>> getMemoColors() {
+////        Map<String, Object> colors = new HashMap<>();
+////        for (User.MemoColor color : User.MemoColor.values()) {
+////            Map<String, String> colorInfo = new HashMap<>();
+////            colorInfo.put("displayName", color.getDisplayName());
+////            colorInfo.put("hexCode", color.getHexCode());
+////            colors.put(color.name(), colorInfo);
+////        }
+////        return ResponseEntity.ok(colors);
+////    }
+//
+//    @Operation(
+//        summary = "가족 관계 목록 조회",
+//        description = "사용 가능한 가족 관계 목록을 조회합니다. 공개 API로 인증이 필요하지 않습니다."
+//    )
+//    @ApiResponses(value = {
+//        @ApiResponse(responseCode = "200", description = "가족 관계 목록 조회 성공",
+//            content = @Content(
+//                mediaType = "application/json",
+//                examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+//                    name = "성공 응답",
+//                    value = "{\n  \"FATHER\": {\n    \"displayName\": \"아빠\",\n    \"description\": \"가족의 아버지\"\n  },\n  \"MOTHER\": {\n    \"displayName\": \"엄마\",\n    \"description\": \"가족의 어머니\"\n  }\n}"
+//                )
+//            ))
+//    })
     @GetMapping("/family-relationships")
     public ResponseEntity<Map<String, Object>> getFamilyRelationships() {
         Map<String, Object> relationships = new HashMap<>();
