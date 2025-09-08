@@ -36,13 +36,13 @@ public class UserProfileResponse {
     public UserProfileResponse() {}
     
     public UserProfileResponse(Long id, String username, String phoneNumber, 
-                              String generation, String role, String memoColor, Boolean hasFamily, String createdAt, String updatedAt) {
+                              String generation, String role, Boolean hasFamily, String createdAt, String updatedAt) {
         this.id = id;
         this.username = username;
         this.phoneNumber = phoneNumber;
         this.generation = generation;
         this.role = role;
-        this.memoColor = memoColor;
+//        this.memoColor = memoColor;
         this.hasFamily = hasFamily;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
